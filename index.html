@@ -5,12 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>UoPeople Deadline Reminder</title>
 <meta name="theme-color" content="#0f1115" />
+<link rel="manifest" href="manifest.json" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="UoPeople" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22192%22%20height%3D%22192%22%20rx%3D%2242%22%20fill%3D%22%234f8cff%22%2F%3E%3Ccircle%20cx%3D%2296%22%20cy%3D%2296%22%20r%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M96%2058v42l28%2016%22%20stroke%3D%22%23fff%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" />
 <style>
   :root{
     --bg:#0f1115; --card:#171a21; --card2:#1e222b; --line:#2a2f3a;
     --txt:#e7eaf0; --muted:#8b93a7; --accent:#4f8cff; --ok:#2ecc71;
-    --warn:#f5a524; --bad:#ff5c5c;
-    --radius:14px;
+    --warn:#f5a524; --bad:#ff5c5c; --radius:14px;
   }
   *{box-sizing:border-box}
   body{
@@ -20,71 +24,42 @@
   }
   header{
     position:sticky; top:0; z-index:10; backdrop-filter:blur(12px);
-    background:rgba(15,17,21,.85); border-bottom:1px solid var(--line);
-    padding:14px 18px;
+    background:rgba(15,17,21,.85); border-bottom:1px solid var(--line); padding:14px 18px;
   }
   .hrow{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
   h1{font-size:17px; margin:0; letter-spacing:.2px}
   h1 span{color:var(--accent)}
   .clock{font-variant-numeric:tabular-nums; font-size:12.5px; color:var(--muted)}
   .clock b{color:var(--txt); font-weight:600}
-
   main{max-width:760px; margin:0 auto; padding:18px}
-
-  .card{
-    background:var(--card); border:1px solid var(--line);
-    border-radius:var(--radius); padding:16px; margin-bottom:16px;
-  }
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:16px}
   label{display:block; font-size:12px; color:var(--muted); margin-bottom:5px; letter-spacing:.3px; text-transform:uppercase}
   input,select,button,textarea{font-family:inherit; font-size:14px}
-  input,select{
-    width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line);
-    background:var(--card2); color:var(--txt); outline:none;
-  }
+  input,select{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--card2); color:var(--txt); outline:none}
   input:focus,select:focus{border-color:var(--accent)}
   input[type="datetime-local"]{color-scheme:dark}
   .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
   .grid .full{grid-column:1 / -1}
   @media(max-width:520px){ .grid{grid-template-columns:1fr} }
-
-  button{
-    cursor:pointer; border:none; border-radius:10px; padding:10px 16px;
-    background:var(--accent); color:#fff; font-weight:600; transition:.15s;
-  }
+  button{cursor:pointer; border:none; border-radius:10px; padding:10px 16px; background:var(--accent); color:#fff; font-weight:600; transition:.15s}
   button:hover{filter:brightness(1.1)}
   button:active{transform:translateY(1px)}
   button.ghost{background:transparent; border:1px solid var(--line); color:var(--muted); font-weight:500}
   button.ghost:hover{color:var(--txt); border-color:var(--accent)}
+  button[disabled]{opacity:.4; cursor:not-allowed}
   .btnrow{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
-
   .tabs{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap}
-  .tab{
-    background:var(--card2); border:1px solid var(--line); color:var(--muted);
-    padding:7px 14px; border-radius:999px; font-size:13px; cursor:pointer;
-  }
+  .tab{background:var(--card2); border:1px solid var(--line); color:var(--muted); padding:7px 14px; border-radius:999px; font-size:13px; cursor:pointer}
   .tab.active{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
-
-  .item{
-    display:flex; gap:12px; align-items:flex-start;
-    background:var(--card); border:1px solid var(--line);
-    border-left:3px solid var(--accent);
-    border-radius:var(--radius); padding:13px 14px; margin-bottom:10px;
-    transition:.15s;
-  }
+  .item{display:flex; gap:12px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--radius); padding:13px 14px; margin-bottom:10px; transition:.15s}
   .item:hover{border-color:var(--accent); border-left-color:var(--accent)}
   .item.overdue{border-left-color:var(--bad)}
   .item.soon{border-left-color:var(--warn)}
   .item.done{opacity:.42; border-left-color:var(--ok)}
   .item.done .title{text-decoration:line-through}
-
-  .chk{
-    flex:0 0 auto; width:22px; height:22px; margin-top:2px; border-radius:6px;
-    border:2px solid var(--line); background:transparent; cursor:pointer;
-    display:grid; place-items:center; color:transparent; font-size:13px; padding:0;
-  }
+  .chk{flex:0 0 auto; width:22px; height:22px; margin-top:2px; border-radius:6px; border:2px solid var(--line); background:transparent; cursor:pointer; display:grid; place-items:center; color:transparent; font-size:13px; padding:0}
   .chk:hover{border-color:var(--accent)}
   .item.done .chk{background:var(--ok); border-color:var(--ok); color:#fff}
-
   .body{flex:1; min-width:0}
   .title{font-weight:600; font-size:14.5px; word-break:break-word}
   .meta{font-size:12.5px; color:var(--muted); margin-top:3px; display:flex; gap:8px; flex-wrap:wrap; align-items:center}
@@ -92,23 +67,17 @@
   .countdown{font-size:12.5px; font-weight:600; white-space:nowrap; color:var(--muted)}
   .countdown.soon{color:var(--warn)}
   .countdown.overdue{color:var(--bad)}
-  .del{
-    background:transparent; border:none; color:var(--muted); cursor:pointer;
-    font-size:17px; line-height:1; padding:4px 6px; border-radius:6px;
-  }
+  .del{background:transparent; border:none; color:var(--muted); cursor:pointer; font-size:17px; line-height:1; padding:4px 6px; border-radius:6px}
   .del:hover{color:var(--bad); background:rgba(255,92,92,.1)}
-
   .empty{text-align:center; color:var(--muted); padding:34px 10px; font-size:14px}
   .footer-note{font-size:12px; color:var(--muted); text-align:center; margin-top:26px; line-height:1.6}
-
-  .toast{
-    position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px);
-    background:var(--card2); border:1px solid var(--accent); color:var(--txt);
-    padding:11px 18px; border-radius:12px; font-size:13.5px; opacity:0;
-    pointer-events:none; transition:.25s; z-index:99; max-width:90vw;
-    box-shadow:0 8px 30px rgba(0,0,0,.5);
-  }
+  .toast{position:fixed; left:50%; bottom:22px; transform:translate(-50%,20px); background:var(--card2); border:1px solid var(--accent); color:var(--txt); padding:11px 18px; border-radius:12px; font-size:13.5px; opacity:0; pointer-events:none; transition:.25s; z-index:99; max-width:90vw; box-shadow:0 8px 30px rgba(0,0,0,.5)}
   .toast.show{opacity:1; transform:translate(-50%,0)}
+  .status{font-size:12px; color:var(--muted); margin-top:12px; line-height:1.7}
+  .status b{color:var(--txt); font-weight:600}
+  .status .dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--muted); margin-right:6px; vertical-align:middle}
+  .status .dot.ok{background:var(--ok)}
+  .status .dot.warn{background:var(--warn)}
 </style>
 </head>
 <body>
@@ -122,7 +91,6 @@
 
 <main>
 
-  <!-- ===== Add form ===== -->
   <section class="card">
     <div class="grid">
       <div class="full">
@@ -156,32 +124,32 @@
     </div>
   </section>
 
-  <!-- ===== Notifications / tools ===== -->
   <section class="card">
     <div class="grid">
       <div>
         <label for="lead">Alert me first at</label>
         <select id="lead">
-          <option value="1440">24 hours before</option>
           <option value="2880">48 hours before</option>
+          <option value="1440">24 hours before</option>
           <option value="720">12 hours before</option>
           <option value="180">3 hours before</option>
         </select>
       </div>
       <div>
-        <label>Desktop alerts</label>
+        <label>Permissions</label>
         <button class="ghost" id="notifyBtn" style="width:100%">Enable notifications</button>
       </div>
     </div>
     <div class="btnrow">
+      <button class="ghost" id="installBtn" hidden>📲 Install app</button>
       <button class="ghost" id="testBtn">Test alert</button>
       <button class="ghost" id="exportBtn">Export JSON</button>
       <button class="ghost" id="importBtn">Import JSON</button>
       <input type="file" id="importFile" accept="application/json" hidden />
     </div>
+    <div class="status" id="status"></div>
   </section>
 
-  <!-- ===== List ===== -->
   <div class="tabs">
     <div class="tab active" data-filter="active">Active</div>
     <div class="tab" data-filter="all">All</div>
@@ -192,8 +160,8 @@
   <div id="list"></div>
 
   <p class="footer-note">
-    Data is saved in this browser only (localStorage).<br>
-    Desktop alerts fire while this page is open in a tab.
+    Data is saved in this browser (localStorage + IndexedDB).<br>
+    Install the app for the most reliable background alerts.
   </p>
 </main>
 
@@ -203,68 +171,44 @@
 (() => {
   "use strict";
 
-  /* ------------------------------------------------------------------
-   * UoPeople Time = GMT-5, fixed all year (no DST).
-   * We store every deadline as an absolute UTC millisecond timestamp.
-   * ------------------------------------------------------------------ */
+  /* ---------- UoPeople time helpers ---------- */
   const UO_OFFSET_MS = -5 * 60 * 60 * 1000;
+  const pad = (n) => String(n).padStart(2, "0");
 
-  const pad = n => String(n).padStart(2, "0");
-
-  /** Break a UTC timestamp into UoPeople wall-clock parts. */
   function uoParts(ms) {
     const d = new Date(ms + UO_OFFSET_MS);
     return {
       y: d.getUTCFullYear(), mo: d.getUTCMonth() + 1, d: d.getUTCDate(),
-      h: d.getUTCHours(), mi: d.getUTCMinutes()
+      h: d.getUTCHours(), mi: d.getUTCMinutes(),
     };
   }
-
-  /** Convert a "YYYY-MM-DDTHH:mm" (UoPeople wall time) string to a UTC ms. */
-  function parseUoInput(value) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value || "");
+  function parseUoInput(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(v || "");
     if (!m) return null;
     const [, y, mo, d, h, mi] = m.map(Number);
     return Date.UTC(y, mo - 1, d, h, mi) - UO_OFFSET_MS;
   }
-
-  /** Format a UTC ms as the value a datetime-local input expects. */
   function toUoInput(ms) {
     const p = uoParts(ms);
     return `${p.y}-${pad(p.mo)}-${pad(p.d)}T${pad(p.h)}:${pad(p.mi)}`;
   }
-
-  /** Human-readable due date, e.g. "Sun 12 Oct, 23:55". */
   function formatDue(ms) {
     const p = uoParts(ms);
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     const dow = new Date(Date.UTC(p.y, p.mo - 1, p.d)).getUTCDay();
     return `${days[dow]} ${p.d} ${months[p.mo - 1]}, ${pad(p.h)}:${pad(p.mi)}`;
   }
-
-  /** "2d 4h" / "45m" / "3d overdue". */
   function formatCountdown(msLeft) {
-    const abs = Math.abs(msLeft);
-    const mins = Math.floor(abs / 60000);
-    const d = Math.floor(mins / 1440);
-    const h = Math.floor((mins % 1440) / 60);
-    const m = mins % 60;
-
-    let out;
-    if (d > 0)      out = `${d}d ${h}h`;
-    else if (h > 0) out = `${h}h ${m}m`;
-    else            out = `${m}m`;
-
+    const abs = Math.abs(msLeft), mins = Math.floor(abs / 60000);
+    const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+    let out = d > 0 ? `${d}d ${h}h` : h > 0 ? `${h}h ${m}m` : `${m}m`;
     return msLeft < 0 ? `${out} overdue` : `${out} left`;
   }
 
-  /* ------------------------------------------------------------------
-   * State
-   * ------------------------------------------------------------------ */
+  /* ---------- state ---------- */
   const STORE_KEY = "uopeople-reminders-v1";
   const SETTINGS_KEY = "uopeople-settings-v1";
-
   let items = [];
   let settings = { leadMinutes: 1440 };
   let filter = "active";
@@ -280,9 +224,7 @@
 
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 
-  /* ------------------------------------------------------------------
-   * Toast
-   * ------------------------------------------------------------------ */
+  /* ---------- toast ---------- */
   let toastTimer;
   function toast(msg) {
     const el = document.getElementById("toast");
@@ -292,49 +234,61 @@
     toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
   }
 
-  /* ------------------------------------------------------------------
-   * Rendering
-   * ------------------------------------------------------------------ */
+  /* ---------- service worker bridge ---------- */
+  let swReg = null;
+
+  async function swReady() {
+    if (!("serviceWorker" in navigator)) return null;
+    try { swReg = await navigator.serviceWorker.ready; return swReg; } catch { return null; }
+  }
+
+  async function swPost(msg) {
+    const reg = await swReady();
+    reg?.active?.postMessage(msg);
+  }
+
+  async function syncToSW() {
+    await swPost({ type: "sync", items, settings });
+  }
+
+  /* Sync back: SW may have fired notifications while the page was closed. */
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.addEventListener("message", (e) => {
+      const d = e.data || {};
+      if (d.type === "sync-back" && Array.isArray(d.items)) {
+        items = d.items;
+        save();
+        render();
+      }
+    });
+  }
+
+  /* ---------- render ---------- */
   const listEl = document.getElementById("list");
 
   function visibleItems() {
     const now = Date.now();
     let out = [...items];
-
-    if (filter === "active")  out = out.filter(i => !i.done);
-    if (filter === "overdue") out = out.filter(i => !i.done && i.due < now);
-    if (filter === "done")    out = out.filter(i => i.done);
-
-    out.sort((a, b) => {
-      if (a.done !== b.done) return a.done ? 1 : -1;
-      return a.due - b.due;
-    });
+    if (filter === "active") out = out.filter((i) => !i.done);
+    if (filter === "overdue") out = out.filter((i) => !i.done && i.due < now);
+    if (filter === "done") out = out.filter((i) => i.done);
+    out.sort((a, b) => (a.done !== b.done ? (a.done ? 1 : -1) : a.due - b.due));
     return out;
   }
 
   function render() {
     const now = Date.now();
     const rows = visibleItems();
-
     if (!rows.length) {
       listEl.innerHTML = `<div class="empty">Nothing here yet.<br>Add a deadline above, or load the weekly template.</div>`;
       return;
     }
-
-    listEl.innerHTML = rows.map(it => {
+    listEl.innerHTML = rows.map((it) => {
       const msLeft = it.due - now;
       const overdue = !it.done && msLeft < 0;
       const soon = !it.done && msLeft >= 0 && msLeft <= 24 * 3600 * 1000;
-
-      const cls = [
-        "item",
-        it.done ? "done" : "",
-        overdue ? "overdue" : "",
-        soon ? "soon" : ""
-      ].filter(Boolean).join(" ");
-
+      const cls = ["item", it.done ? "done" : "", overdue ? "overdue" : "", soon ? "soon" : ""].filter(Boolean).join(" ");
       const cdCls = it.done ? "" : overdue ? "overdue" : soon ? "soon" : "";
-
       return `
         <div class="${cls}" data-id="${it.id}">
           <button class="chk" data-act="toggle" title="Mark done">✓</button>
@@ -353,198 +307,162 @@
   }
 
   function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[c]));
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
 
-  /* ------------------------------------------------------------------
-   * Actions
-   * ------------------------------------------------------------------ */
+  /* ---------- actions ---------- */
   function addItem(title, course, type, dueMs) {
     if (!title) { toast("Give the reminder a title first."); return false; }
     if (!dueMs || isNaN(dueMs)) { toast("Pick a valid due date."); return false; }
-
-    items.push({
-      id: uid(),
-      title: title.trim(),
-      course: (course || "").trim(),
-      type: type || "Other",
-      due: dueMs,
-      done: false,
-      notified: {}
-    });
-    save();
-    render();
+    items.push({ id: uid(), title: title.trim(), course: (course || "").trim(), type: type || "Other", due: dueMs, done: false, notified: {} });
+    save(); render(); syncToSW();
     return true;
   }
 
-  /* A typical 8-week UoPeople rhythm, anchored to the coming Sunday. */
   function addWeeklyTemplate() {
-    // Find the next Sunday 23:55 UoPeople time.
     const nowUo = uoParts(Date.now());
     const todayUtcMidnight = Date.UTC(nowUo.y, nowUo.mo - 1, nowUo.d);
-    const dow = new Date(todayUtcMidnight).getUTCDay();       // 0 = Sunday
+    const dow = new Date(todayUtcMidnight).getUTCDay();
     let daysAhead = (7 - dow) % 7;
     if (daysAhead === 0 && (nowUo.h * 60 + nowUo.mi) >= 23 * 60 + 55) daysAhead = 7;
-
     const sunday = todayUtcMidnight + daysAhead * 86400000;
-    const at = (dayOffset, h, mi) => sunday + dayOffset * 86400000 + h * 3600000 + mi * 60000 - UO_OFFSET_MS;
+    const at = (d, h, mi) => sunday + d * 86400000 + h * 3600000 + mi * 60000 - UO_OFFSET_MS;
 
     const course = document.getElementById("course").value.trim() || "";
     const made = [
       ["Discussion Post (initial)", "Discussion Post", at(0, 23, 55)],
       ["Written Assignment", "Written Assignment", at(0, 23, 55)],
       ["Discussion Replies (to peers)", "Discussion Reply", at(3, 23, 55)],
-      ["Learning Journal", "Learning Journal", at(4, 23, 55)]
+      ["Learning Journal", "Learning Journal", at(4, 23, 55)],
     ].filter(([t, ty, d]) => addItem(t, course, ty, d));
 
     toast(`Added ${made.length} reminders for the week.`);
   }
 
-  /* ------------------------------------------------------------------
-   * Reminder engine
-   * ------------------------------------------------------------------ */
-  const STAGES = [
-    { key: "d1", mins: null /* filled from settings.leadMinutes */ },
-    { key: "h1", mins: 60 },
-    { key: "m0", mins: 0 }
-  ];
-
-  function checkReminders() {
-    const now = Date.now();
-    let changed = false;
-
-    const stages = [
-      { key: "lead", mins: Number(settings.leadMinutes) || 1440 },
-      { key: "h1", mins: 60 },
-      { key: "m0", mins: 0 }
-    ].sort((a, b) => b.mins - a.mins);
-
-    for (const it of items) {
-      if (it.done) continue;
-      it.notified = it.notified || {};
-
-      const msLeft = it.due - now;
-      const passed = stages.filter(s => msLeft <= s.mins * 60000 && !it.notified[s.key]);
-
-      if (passed.length) {
-        // Mark every crossed stage as fired, but only show the tightest one.
-        passed.forEach(s => { it.notified[s.key] = now; });
-        const tightest = passed[passed.length - 1];
-        fireNotification(it, tightest);
-        changed = true;
-      }
-    }
-
-    if (changed) save();
-  }
-
-  function fireNotification(it, stage) {
-    const when = stage.mins === 0 ? "now" :
-                 stage.mins < 60 ? `in ${stage.mins} min` :
-                 stage.mins < 1440 ? `in ${Math.round(stage.mins / 60)} hour(s)` :
-                 `in ${Math.round(stage.mins / 1440)} day(s)`;
-
-    const title = `⏰ ${it.type} due ${when}`;
-    const body = `${it.course ? it.course + " — " : ""}${it.title} · ${formatDue(it.due)}`;
-
-    // In-page toast always shows.
-    toast(`${title} — ${it.course ? it.course + " " : ""}${it.title}`);
-
-    if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-    try {
-      new Notification(title, { body, tag: it.id + stage.key, requireInteraction: false });
-    } catch {
-      /* Mobile browsers without a service worker will throw — the toast covers it. */
-    }
-  }
-
-  /* ------------------------------------------------------------------
-   * UI wiring
-   * ------------------------------------------------------------------ */
+  /* ---------- UI wiring ---------- */
   document.getElementById("addBtn").addEventListener("click", () => {
-    const title  = document.getElementById("title").value;
+    const title = document.getElementById("title").value;
     const course = document.getElementById("course").value;
-    const type   = document.getElementById("type").value;
-    const dueMs  = parseUoInput(document.getElementById("due").value);
-
+    const type = document.getElementById("type").value;
+    const dueMs = parseUoInput(document.getElementById("due").value);
     if (addItem(title, course, type, dueMs)) {
       document.getElementById("title").value = "";
       document.getElementById("title").focus();
       toast("Reminder added.");
     }
   });
-
-  // Enter key in the title field submits.
-  document.getElementById("title").addEventListener("keydown", e => {
+  document.getElementById("title").addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("addBtn").click();
   });
-
   document.getElementById("templateBtn").addEventListener("click", addWeeklyTemplate);
 
-  listEl.addEventListener("click", e => {
+  listEl.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-act]");
     if (!btn) return;
     const id = btn.closest("[data-id]").dataset.id;
-    const item = items.find(i => i.id === id);
+    const item = items.find((i) => i.id === id);
     if (!item) return;
 
     if (btn.dataset.act === "toggle") {
       item.done = !item.done;
-      if (!item.done) item.notified = {}; // re-arm if un-completed
+      if (!item.done) {
+        item.notified = {};
+        swPost({ type: "reset-item", id });
+      }
     }
     if (btn.dataset.act === "delete") {
-      items = items.filter(i => i.id !== id);
+      items = items.filter((i) => i.id !== id);
     }
-    save();
-    render();
+    save(); render(); syncToSW();
   });
 
-  document.querySelectorAll(".tab").forEach(tab => {
+  document.querySelectorAll(".tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".tab").forEach((t) => t.classList.remove("active"));
       tab.classList.add("active");
       filter = tab.dataset.filter;
       render();
     });
   });
 
-  document.getElementById("lead").addEventListener("change", e => {
+  document.getElementById("lead").addEventListener("change", (e) => {
     settings.leadMinutes = Number(e.target.value);
-    save();
+    save(); syncToSW();
     toast("Lead time updated.");
   });
 
   document.getElementById("notifyBtn").addEventListener("click", async () => {
-    if (!("Notification" in window)) {
-      toast("This browser doesn't support desktop notifications.");
-      return;
-    }
+    if (!("Notification" in window)) { toast("This browser doesn't support notifications."); return; }
     const perm = await Notification.requestPermission();
     toast(perm === "granted" ? "Alerts enabled." : "Alerts were blocked.");
-    updateNotifyBtn();
+    updateStatus();
+    if (perm === "granted") setupPeriodicSync();
   });
 
-  document.getElementById("testBtn").addEventListener("click", () => {
-    const fake = {
-      id: "test",
-      title: "Test reminder — your alerts are working",
-      course: "CS 1101",
-      type: "Written Assignment",
-      due: Date.now() + 3600000
-    };
-    fireNotification(fake, { key: "h1", mins: 60 });
+  document.getElementById("testBtn").addEventListener("click", async () => {
+    const reg = await swReady();
+    if (!reg) { toast("Service worker not ready."); return; }
+    if (Notification.permission !== "granted") { toast("Enable notifications first."); return; }
+    await reg.showNotification("⏰ Test reminder", {
+      body: "Your UoPeople alerts are working.",
+      icon: "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20192%20192%22%3E%3Crect%20width%3D%22192%22%20height%3D%22192%22%20rx%3D%2242%22%20fill%3D%22%234f8cff%22%2F%3E%3Ccircle%20cx%3D%2296%22%20cy%3D%2296%22%20r%3D%2252%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M96%2058v42l28%2016%22%20stroke%3D%22%23fff%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E",
+      tag: "test",
+    });
+    toast("Test notification sent.");
   });
 
-  function updateNotifyBtn() {
-    const btn = document.getElementById("notifyBtn");
-    const ok = "Notification" in window && Notification.permission === "granted";
-    btn.textContent = ok ? "✓ Notifications on" : "Enable notifications";
+  /* ---------- install prompt ---------- */
+  let deferredPrompt = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById("installBtn").hidden = false;
+  });
+  document.getElementById("installBtn").addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById("installBtn").hidden = true;
+    toast(outcome === "accepted" ? "App installed." : "Install cancelled.");
+  });
+  window.addEventListener("appinstalled", () => {
+    document.getElementById("installBtn").hidden = true;
+    toast("App installed. Background alerts active.");
+    updateStatus();
+  });
+
+  /* ---------- periodic background sync (Chrome/Edge) ---------- */
+  async function setupPeriodicSync() {
+    const reg = await swReady();
+    if (!reg || !("periodicSync" in reg)) return "unsupported";
+    try {
+      const status = await navigator.permissions.query({ name: "periodic-background-sync" });
+      if (status.state === "granted") {
+        await reg.periodicSync.register("uopeople-check", { minInterval: 30 * 60 * 1000 });
+        return "on";
+      }
+      return status.state;
+    } catch { return "unavailable"; }
   }
 
-  /* Export / import */
+  /* ---------- status line ---------- */
+  async function updateStatus() {
+    const el = document.getElementById("status");
+    const parts = [];
+    const swOk = "serviceWorker" in navigator && !!navigator.serviceWorker.controller;
+    const notif = "Notification" in window && Notification.permission === "granted";
+    parts.push(`<div><span class="dot ${swOk ? "ok" : "warn"}"></span>Service worker: <b>${swOk ? "active" : "installing"}</b></div>`);
+    parts.push(`<div><span class="dot ${notif ? "ok" : "warn"}"></span>Notifications: <b>${notif ? "allowed" : "not allowed"}</b></div>`);
+    if ("periodicSync" in (self.ServiceWorkerRegistration?.prototype || {})) {
+      parts.push(`<div><span class="dot ok"></span>Background checks: <b>supported</b> (Chrome/Edge, installed PWA)</div>`);
+    } else {
+      parts.push(`<div><span class="dot warn"></span>Background checks: <b>limited</b> in this browser (alerts fire while a tab is open)</div>`);
+    }
+    el.innerHTML = parts.join("");
+  }
+
+  /* ---------- export / import ---------- */
   document.getElementById("exportBtn").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -553,12 +471,8 @@
     a.click();
     URL.revokeObjectURL(a.href);
   });
-
-  document.getElementById("importBtn").addEventListener("click", () => {
-    document.getElementById("importFile").click();
-  });
-
-  document.getElementById("importFile").addEventListener("change", e => {
+  document.getElementById("importBtn").addEventListener("click", () => document.getElementById("importFile").click());
+  document.getElementById("importFile").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -566,43 +480,28 @@
       try {
         const parsed = JSON.parse(reader.result);
         if (!Array.isArray(parsed)) throw new Error("bad format");
-        const ids = new Set(items.map(i => i.id));
+        const ids = new Set(items.map((i) => i.id));
         let added = 0;
-        parsed.forEach(p => {
-          if (!p || !p.title || !p.due) return;
-          if (ids.has(p.id)) return;
-          items.push({
-            id: p.id || uid(),
-            title: p.title,
-            course: p.course || "",
-            type: p.type || "Other",
-            due: Number(p.due),
-            done: !!p.done,
-            notified: p.notified || {}
-          });
+        parsed.forEach((p) => {
+          if (!p || !p.title || !p.due || ids.has(p.id)) return;
+          items.push({ id: p.id || uid(), title: p.title, course: p.course || "", type: p.type || "Other", due: Number(p.due), done: !!p.done, notified: p.notified || {} });
           added++;
         });
-        save();
-        render();
+        save(); render(); syncToSW();
         toast(`Imported ${added} reminder(s).`);
-      } catch {
-        toast("That file couldn't be read.");
-      }
+      } catch { toast("That file couldn't be read."); }
     };
     reader.readAsText(file);
     e.target.value = "";
   });
 
-  /* ------------------------------------------------------------------
-   * Clocks & timers
-   * ------------------------------------------------------------------ */
+  /* ---------- clock ---------- */
   function tickClock() {
     const p = uoParts(Date.now());
     document.getElementById("clock").textContent = `${pad(p.h)}:${pad(p.mi)}`;
   }
 
   function defaultDueValue() {
-    // Default to the next 23:55 UoPeople time.
     const p = uoParts(Date.now());
     const base = Date.UTC(p.y, p.mo - 1, p.d, 23, 55);
     const nowUtc = Date.now() + UO_OFFSET_MS;
@@ -610,30 +509,38 @@
     return toUoInput(due - UO_OFFSET_MS);
   }
 
-  /* ------------------------------------------------------------------
-   * Boot
-   * ------------------------------------------------------------------ */
+  /* ---------- boot ---------- */
   load();
   document.getElementById("due").value = defaultDueValue();
   document.getElementById("lead").value = String(settings.leadMinutes);
-  updateNotifyBtn();
   render();
   tickClock();
+  updateStatus();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").then(async () => {
+      const reg = await navigator.serviceWorker.ready;
+      if (navigator.serviceWorker.controller) {
+        await syncToSW();
+        await swPost({ type: "check" });
+      } else {
+        navigator.serviceWorker.addEventListener("controllerchange", async () => {
+          await syncToSW();
+          await swPost({ type: "check" });
+          updateStatus();
+        }, { once: true });
+      }
+      if (Notification.permission === "granted") setupPeriodicSync().then(updateStatus);
+    }).catch(() => toast("Service worker failed to register."));
+  }
 
   setInterval(tickClock, 15000);
-  setInterval(render, 30000);          // refresh countdowns
-  setInterval(checkReminders, 30000);  // reminder engine
-  setTimeout(checkReminders, 1500);    // catch up on load
-
-  // Re-check immediately when the tab regains focus.
+  setInterval(render, 30000);
+  setInterval(() => swPost({ type: "check" }), 30000);
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) { render(); checkReminders(); }
-  });
-
-  window.addEventListener("storage", e => {
-    if (e.key === STORE_KEY) { load(); render(); }
+    if (!document.hidden) { render(); swPost({ type: "check" }); updateStatus(); }
   });
 })();
 </script>
 </body>
-  </html>
+</html>
